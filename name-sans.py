@@ -1,9 +1,10 @@
+from defcon import Features
 import numpy as np
 from coldtype import *
 
 name = Font.Cacheable("~/fonts/variable/NameSans.ttf")
 
-length = 700
+length = 100
 
 BG_COLOR = "#16171D"
 PRIMARY_COLOR = "#D5D8FB"
@@ -53,8 +54,9 @@ def eszett(f):
     )
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
 def arrow(f):
+    n = 7**2
     arrows = (
         PS(
             [
@@ -63,16 +65,68 @@ def arrow(f):
                     name,
                     200,
                     opsz=1,
-                    wght=np.cos(100 + (f.i / 100) * (i / 9)),
+                    # wght=np.cos(100 + (f.i / 100) * (i / 9)),
+                    wght=i % n / n,
                     fill=PRIMARY_COLOR,
-                ).rotate(45 * np.cos(f.i / 100 * i / 10))
-                for i in range(49)
+                ).rotate(45 * np.cos((i / (n * 5)) * (f.i / 10)))
+                for i in range(n)
             ]
         )
-        .grid(every=7)
-        .translate(x=30)
+        .grid(every=np.sqrt(n))
+        .translate(x=30, transformFrame=False)
     )
+
     return arrows
+
+
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
+def numbers(f):
+    def map_color(i):
+        if i == math.isqrt(i) ** 2:
+            return ACCENT_COLOR
+        elif i % 2 == 0:
+            return PRIMARY_COLOR
+        else:
+            return SECONDARY_COLOR
+
+    ot_features = f"Tabular Numbers (tnum) \nSlashed Zero (zero)"
+    ot_feat_stst = (
+        StSt(
+            ot_features,
+            name,
+            20,
+            opsz=0.1,
+            wght=0.5,
+            leading=10,
+            features={"tnum": True, "zero": True},
+        )
+        .align(f.a.r.inset(30), x="mnx", y="mxy")
+        .f(SECONDARY_COLOR, 0.4)
+    )
+
+    n = 9**2
+    numbers = (
+        PS(
+            [
+                StSt(
+                    f"{i+1:02d}",
+                    name,
+                    94,
+                    opsz=0.7,
+                    # wght=np.cos(100 + (f.i / 100) * (i / 9)),
+                    wght=i / n - f.e("ceio"),
+                    fill=map_color(i + 1),
+                    features={"tnum": True, "zero": True},
+                )
+                for i in range(n)
+            ]
+        )
+        .grid(every=np.sqrt(n))
+        .lead(30)
+        .align(f.a.r.inset(50), x="mdx", y="mny")
+    )
+
+    return (numbers, ot_feat_stst)
 
 
 # @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
