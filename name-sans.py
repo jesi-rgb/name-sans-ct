@@ -79,7 +79,10 @@ def arrow(f):
     return arrows
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
+length_numbers = 700
+
+
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length_numbers, fps=30))
 def numbers(f):
     def map_color(i):
         if i == math.isqrt(i) ** 2:
@@ -89,7 +92,7 @@ def numbers(f):
         else:
             return SECONDARY_COLOR
 
-    ot_features = f"Tabular Numbers (tnum) \nSlashed Zero (zero)"
+    ot_features = f"Tabular Numbers (tnum)\nSlashed Zero (zero)"
     ot_feat_stst = (
         StSt(
             ot_features,
@@ -113,8 +116,8 @@ def numbers(f):
                     name,
                     94,
                     opsz=0.7,
-                    # wght=np.cos(100 + (f.i / 100) * (i / 9)),
-                    wght=i / n - f.e("ceio"),
+                    # wght=np.cos(i % n * (f.i / 100)),
+                    wght=np.cos(i % n * f.i / length),  # happy with this one
                     fill=map_color(i + 1),
                     features={"tnum": True, "zero": True},
                 )
@@ -123,7 +126,7 @@ def numbers(f):
         )
         .grid(every=np.sqrt(n))
         .lead(30)
-        .align(f.a.r.inset(50), x="mdx", y="mny")
+        .translate(x=20, y=30)
     )
 
     return (numbers, ot_feat_stst)
@@ -168,4 +171,4 @@ def grotesque(f):
 
 
 def release(passes):
-    FFMPEGExport(arrow, passes).prores().write()
+    FFMPEGExport(numbers, passes).prores().write()
