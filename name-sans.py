@@ -1,10 +1,10 @@
+from coldtype.geometry.primitives import scale
 from defcon import Features
 import numpy as np
 from coldtype import *
 
 name = Font.Cacheable("~/fonts/variable/NameSans.ttf")
 
-length = 100
 
 BG_COLOR = "#16171D"
 PRIMARY_COLOR = "#D5D8FB"
@@ -33,7 +33,7 @@ def name_sans(f):
     )
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
 def eszett(f):
     return (
         StSt(
@@ -54,7 +54,10 @@ def eszett(f):
     )
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
+arrows_length = 600
+
+
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(arrows_length, fps=60))
 def arrow(f):
     n = 7**2
     arrows = (
@@ -68,7 +71,7 @@ def arrow(f):
                     # wght=np.cos(100 + (f.i / 100) * (i / 9)),
                     wght=i % n / n,
                     fill=PRIMARY_COLOR,
-                ).rotate(45 * np.cos((i / (n * 5)) * (f.i / 10)))
+                ).rotate(45 * np.cos((i / ((n / 2) * 5)) * (f.i / 10)))
                 for i in range(n)
             ]
         )
@@ -82,7 +85,7 @@ def arrow(f):
 length_numbers = 700
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length_numbers, fps=30))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length_numbers, fps=30))
 def numbers(f):
     def map_color(i):
         if i == math.isqrt(i) ** 2:
@@ -117,7 +120,8 @@ def numbers(f):
                     94,
                     opsz=0.7,
                     # wght=np.cos(i % n * (f.i / 100)),
-                    wght=np.cos(i % n * f.i / length),  # happy with this one
+                    wght=0.5
+                    + 0.5 * np.cos(i % n * f.i / length_numbers),  # happy with this one
                     fill=map_color(i + 1),
                     features={"tnum": True, "zero": True},
                 )
@@ -132,11 +136,14 @@ def numbers(f):
     return (numbers, ot_feat_stst)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length, fps=60))
+grotesque_length = 400
+
+
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def grotesque(f):
 
-    ss19 = True if f.i > length // 2 else False
-    ss06 = True if f.i > length // 2 else False
+    ss19 = True if f.i > grotesque_length // 2 else False
+    ss06 = True if f.i > grotesque_length // 2 else False
     main = (
         StSt(
             "GRO\nTES\nQUE",
@@ -153,6 +160,7 @@ def grotesque(f):
         .removeOverlap()
         # .outline(offset=3.5)
         .align(f.a.r)
+        .translate(x=0, y=50)
     )
     ot_features = f"Alternate G (ss06) = {'On' if ss06 else 'Off'}\nAlternate R (ss19) = {'On' if ss19 else 'Off'}"
     ot_feat_stst = (
@@ -171,4 +179,4 @@ def grotesque(f):
 
 
 def release(passes):
-    FFMPEGExport(numbers, passes).prores().write()
+    FFMPEGExport(eszett, passes, scale=1.3).prores().write(verbose=1).open()
