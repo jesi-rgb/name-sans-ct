@@ -1,5 +1,3 @@
-from coldtype.geometry.primitives import scale
-from defcon import Features
 import numpy as np
 from coldtype import *
 
@@ -33,7 +31,7 @@ def name_sans(f):
     )
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
 def eszett(f):
     return (
         StSt(
@@ -178,5 +176,37 @@ def grotesque(f):
     return (main, ot_feat_stst)
 
 
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+def angle(f):
+    angle = f.e("qeio")
+
+    main = (
+        StSt("NAME\nSANS", name, 300, opsz=1, ital=angle, wght=0.4, leading=40)
+        .f(-1)
+        .ro()
+        .ssw(PRIMARY_COLOR, f.e("qeio", rng=(0.3, 3)))
+        .align(f.a.r.inset(30), x="mnx")
+    )
+
+    angle = (
+        StSt(
+            f"{angle*11.31:05.2f}º",
+            name,
+            200,
+            opsz=1,
+            ital=angle,
+            features={"tnum": True, "zero": True},
+        )
+        .f(PRIMARY_COLOR)
+        .align(
+            f.a.r.inset(30),
+            x="mnx",
+            y="mny",
+        )
+    )
+
+    return (main, angle)
+
+
 def release(passes):
-    FFMPEGExport(eszett, passes, scale=1.3).prores().write(verbose=1).open()
+    FFMPEGExport(angle, passes, scale=1.3).prores().write(verbose=1).open()
