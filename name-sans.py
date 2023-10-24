@@ -139,7 +139,6 @@ grotesque_length = 400
 
 # @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def grotesque(f):
-
     ss19 = True if f.i > grotesque_length // 2 else False
     ss06 = True if f.i > grotesque_length // 2 else False
     main = (
@@ -176,7 +175,7 @@ def grotesque(f):
     return (main, ot_feat_stst)
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def angle(f):
     angle = f.e("qeio")
 
@@ -208,5 +207,90 @@ def angle(f):
     return (main, angle)
 
 
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(800, fps=60))
+def design_space(f):
+    inset = 100
+
+    w, h = 600, 600
+    rect = (
+        P()
+        .roundedRect(Rect(w + 30, h + 30), hr=10)
+        .fssw(-1, PRIMARY_COLOR, 6)
+        .align(f.a.r.inset(inset), y="mxy")
+    )
+
+    w_l = 4
+    i_l = 3
+    wght_axis = f.e("qeio", w_l)
+    ital_axis = f.e("qeio", i_l)
+
+    grid = Grid(
+        Rect(w + 30, h + 30).align(f.a.r.inset(inset), y="mxy"),
+        "a a a",
+        "a a a",
+        "1 b c / d e f / g h i",
+    )
+    squares = [P(grid[c]).fssw(-1, SECONDARY_COLOR, 0.5) for c in "1bcdefghi"]
+
+    dot = (
+        P()
+        .oval(Rect(30, 30))
+        .f(ACCENT_COLOR)
+        .align(rect)
+        .translate(
+            x=f.e("qeio", w_l, rng=(-w / 2, w / 2)),
+            y=f.e("qeio", i_l, rng=(-h / 2, h / 2)),
+        )
+    )
+
+    ital_label = (
+        StSt("Italic -->", name, 50, ital=1, wght=0.5, fill=SECONDARY_COLOR)
+        .rotate(90)
+        .align(rect, x="mnx", y="mny", tx=1, ty=1)
+        .translate(x=-50, y=0)
+    )
+    ital_value = (
+        StSt(
+            f"{ital_axis:.2f}",
+            name,
+            50,
+            wght=0.5,
+            features={"tnum": True, "zero": True},
+        )
+        .rotate(90)
+        .f(SECONDARY_COLOR, 0.5)
+        .align(rect, x="mnx", y="mxy", tx=1, ty=1)
+        .translate(x=-50, y=0)
+    )
+    wght_label = (
+        StSt("Weight -->", name, 50, ital=1, wght=0.5, fill=SECONDARY_COLOR)
+        .align(rect, x="mnx", y="mny", tx=1, ty=1)
+        .translate(x=0, y=-60)
+    )
+    wght_value = (
+        StSt(
+            f"{wght_axis*999:06.2f}",
+            name,
+            50,
+            wght=0.5,
+            features={"tnum": True, "zero": True},
+        )
+        .f(SECONDARY_COLOR, 0.5)
+        .align(rect, x="mxx", y="mny", tx=1, ty=1)
+        .translate(x=0, y=-50)
+    )
+
+    text = StSt(
+        "Unmistakable",
+        name,
+        130,
+        wght=wght_axis,
+        ital=ital_axis,
+        fill=PRIMARY_COLOR,
+        features={"ss09": True},
+    ).align(f.a.r.inset(inset), y="mny")
+    return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
+
+
 def release(passes):
-    FFMPEGExport(angle, passes, scale=1.3).prores().write(verbose=1).open()
+    FFMPEGExport(design_space, passes).h264().write().open()
