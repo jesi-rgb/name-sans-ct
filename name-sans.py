@@ -175,7 +175,7 @@ def grotesque(f):
     return (main, ot_feat_stst)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def angle(f):
     angle = f.e("qeio")
 
@@ -189,7 +189,7 @@ def angle(f):
 
     angle = (
         StSt(
-            f"{angle*11.31:05.2f}º",
+            f"{angle*11.31:05.2f}°",
             name,
             200,
             opsz=1,
@@ -207,7 +207,7 @@ def angle(f):
     return (main, angle)
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(800, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(800, fps=60))
 def design_space(f):
     inset = 100
 
@@ -293,4 +293,4 @@ def design_space(f):
 
 
 def release(passes):
-    FFMPEGExport(design_space, passes).h264().write().open()
+    FFMPEGExport(angle, passes).prores().write().open()
