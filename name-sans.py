@@ -3,6 +3,16 @@ from coldtype import *
 
 name = Font.Cacheable("~/fonts/variable/NameSans.ttf")
 
+midi = MidiTimeline("assets/name_sans.mid", track=0, bpm=68, fps=60)
+ar = {
+    "KD": [10, 20],
+    "CW": [15, 75],
+    "HT": [10, 10],
+    "RS": [5, 5],
+    "SD": [3, 90],
+    "TM": [5, 10],
+}
+
 
 BG_COLOR = "#16171D"
 PRIMARY_COLOR = "#D5D8FB"
@@ -175,7 +185,7 @@ def grotesque(f):
     return (main, ot_feat_stst)
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def angle(f):
     angle = f.e("qeio")
 
@@ -286,11 +296,46 @@ def design_space(f):
         130,
         wght=wght_axis,
         ital=ital_axis,
+        opsz=1,
         fill=PRIMARY_COLOR,
         features={"ss09": True},
     ).align(f.a.r.inset(inset), y="mny")
     return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
 
 
+@animation(render_bg=1, bg=BG_COLOR, timeline=midi)
+def on_beat(f):
+    drums = f.t
+
+    snare = drums.ki(37)
+    snare_v, si = snare.adsr(ar["SD"], find=1)
+
+    kick = drums.ki(36)
+
+    string = "Variable"
+    if si % 4 == 0:
+        string = "Weight"
+    elif si % 4 == 1:
+        string = "Italic"
+    elif si % 4 == 2:
+        string = "OPSZ"
+    else:
+        string = "Variable"
+    print(string, si)
+
+    main = StSt(
+        string,
+        name,
+        280,
+        opsz=0.1,
+        wght=kick.adsr(ar["KD"], rng=(0.5, 0.9)),
+        ital=snare_v,
+        fill=PRIMARY_COLOR,
+        features={"ss10": True},
+    ).align(f.a.r)
+
+    return (main,)
+
+
 def release(passes):
-    FFMPEGExport(angle, passes).prores().write().open()
+    FFMPEGExport(on_beat, passes).prores().write().open()
