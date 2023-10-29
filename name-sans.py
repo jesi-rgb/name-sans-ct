@@ -1,5 +1,6 @@
 import numpy as np
 from coldtype import *
+from coldtype.warping import warp
 
 name = Font.Cacheable("~/fonts/variable/NameSans.ttf")
 
@@ -7,7 +8,7 @@ midi = MidiTimeline("assets/name_sans.mid", track=0, bpm=68, fps=60)
 ar = {
     "KD": [10, 20],
     "CW": [15, 75],
-    "HT": [10, 10],
+    "HT": [2, 2],
     "RS": [5, 5],
     "SD": [3, 90],
     "TM": [5, 10],
@@ -312,6 +313,13 @@ def on_beat(f):
 
     kick = drums.ki(36)
 
+    perc_1 = drums.ki(46)
+    perc_2 = drums.ki(49)
+    perc_3 = drums.ki(52)
+    perc_4 = drums.ki(58)
+    perc_5 = drums.ki(57)
+    hh = drums.ki(42)
+
     string = "Variable"
     if si % 4 == 0:
         string = "Weight"
@@ -321,21 +329,50 @@ def on_beat(f):
         string = "OPSZ"
     else:
         string = "Variable"
-    print(string, si)
 
-    main = StSt(
-        string,
-        name,
-        280,
-        opsz=0.1,
-        wght=kick.adsr(ar["KD"], rng=(0.5, 0.9)),
-        ital=snare_v,
-        fill=PRIMARY_COLOR,
-        features={"ss10": True},
-    ).align(f.a.r)
+    subdivisions = 10
+    subdv_string = "a " * subdivisions
+    names = [str(c) for c in range(subdivisions**2)]
+    names_breakdown = " / ".join(
+        [
+            " ".join(names[i * subdivisions : i * subdivisions + subdivisions])
+            for i in range(subdivisions)
+        ]
+    )
 
-    return (main,)
+    grid = Grid(
+        Rect(f.a.r).align(f.a.r, y="mxy"), subdv_string, subdv_string, names_breakdown
+    )
+    squares = [P(grid[(str(c))]).fssw(-1, SECONDARY_COLOR, 0.0) for c in names]
+
+    squares[9].f(PRIMARY_COLOR, perc_3.adsr(ar["HT"]))
+    squares[15].f(PRIMARY_COLOR, perc_2.adsr(ar["KD"]))
+    squares[40].f(PRIMARY_COLOR, perc_1.adsr(ar["KD"]))
+    squares[79].f(PRIMARY_COLOR, perc_4.adsr(ar["KD"]))
+    squares[32].f(PRIMARY_COLOR, perc_5.adsr(ar["KD"]))
+    squares[np.random.randint(0, subdivisions**2)].f(
+        SECONDARY_COLOR, hh.adsr(ar["HT"])
+    )
+
+    main = (
+        StSt(
+            string,
+            name,
+            300,
+            opsz=1,
+            wght=kick.adsr(ar["KD"], rng=(0.1, 0.9)) + snare_v,
+            ital=snare_v,
+            features={"ss10": True},
+            ro=1,
+            tu=-70,
+        )
+        .align(f.a.r)
+        .f(ACCENT_COLOR, snare.adsr(ar["SD"]))
+        .ssw(PRIMARY_COLOR, kick.adsr(ar["SD"], rng=(1, 3)))
+    )
+
+    return (*squares, main)
 
 
 def release(passes):
-    FFMPEGExport(on_beat, passes).prores().write().open()
+    FFMPEGExport(on_beat, passes).h264().write().open()
