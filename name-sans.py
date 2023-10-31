@@ -1,3 +1,4 @@
+from re import escape
 import numpy as np
 from coldtype import *
 from coldtype.warping import warp
@@ -5,6 +6,8 @@ from coldtype.warping import warp
 name = Font.Cacheable("~/fonts/variable/NameSans.ttf")
 
 midi = MidiTimeline("assets/name_sans.mid", track=0, bpm=68, fps=60)
+wav = __sibling__("assets/name_sans.wav")
+
 ar = {
     "KD": [10, 20],
     "CW": [15, 75],
@@ -40,6 +43,28 @@ def name_sans(f):
         # .outline(offset=3.5)
         .align(f.a.r)
     )
+
+
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+def wave_bold(f):
+    texts = []
+    for i in range(10):
+        texts.append(
+            Glyphwise(
+                "SICK SICK SICK",
+                lambda g: Style(
+                    name,
+                    fill=SECONDARY_COLOR if i % 2 == 0 else PRIMARY_COLOR,
+                    font_size=130,
+                    wght=f.adj(g.i * i).e("qeio", 4),
+                    tu=-190,
+                ),
+            ).align(f.a.r)
+        )
+
+    group = PS(*texts).stack(leading=10).align(f.a.r)
+
+    return group
 
 
 # @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
@@ -304,7 +329,7 @@ def design_space(f):
     return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=midi)
+# @animation(render_bg=1, bg=BG_COLOR, timeline=midi, audio=wav)
 def on_beat(f):
     drums = f.t
 
@@ -375,4 +400,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(on_beat, passes).h264().write().open()
+    FFMPEGExport(wave_bold, passes).prores().write().open()
