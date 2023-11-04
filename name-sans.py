@@ -45,17 +45,17 @@ def name_sans(f):
     )
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
 def wave_bold(f):
     texts = []
-    for i in range(10):
+    for i in range(12):
         texts.append(
             Glyphwise(
-                "SICK SICK SICK",
+                "NAME SANS VARIABLE",
                 lambda g: Style(
                     name,
                     fill=SECONDARY_COLOR if i % 2 == 0 else PRIMARY_COLOR,
-                    font_size=130,
+                    font_size=110,
                     wght=f.adj(g.i * i).e("qeio", 4),
                     tu=-190,
                 ),
@@ -67,15 +67,16 @@ def wave_bold(f):
     return group
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
-def eszett(f):
-    return (
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+def chars(f):
+    char_code = f.i // 5 + 32
+    main = (
         StSt(
-            "ß",
+            chr(char_code),
             name,
             800,
             opsz=1,
-            ital=f.e("qeio"),
+            ital=f.e("qeio", 2),
             wght=f.e("qeio"),
             leading=60,
             multiline=True,
@@ -85,7 +86,21 @@ def eszett(f):
         .removeOverlap()
         # .outline(offset=3.5)
         .align(f.a.r)
+        .translate(x=0, y=100)
     )
+    code = (
+        StSt(
+            f"UTF Code \\u{ {char_code} }",
+            name,
+            50,
+            opsz=0,
+            wght=0.3,
+            features={"tnum": True},
+        )
+        .align(f.a.r.inset(30), y="mny")
+        .f(SECONDARY_COLOR, 0.7)
+    )
+    return (main, code)
 
 
 arrows_length = 600
