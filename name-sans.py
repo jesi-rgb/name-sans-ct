@@ -371,14 +371,21 @@ def on_beat(f):
         string = "Variable"
 
     subdivisions = 10
-    subdv_string = "a " * subdivisions
-    names = [str(c) for c in range(subdivisions**2)]
+    subdv_string = (
+        "a " * subdivisions
+    )  # a is automatic, we create {subdivisions} slots of automatic width and height
+    names = [
+        str(c) for c in range(subdivisions**2)
+    ]  # give each slot a name, programatically
     names_breakdown = " / ".join(
         [
             " ".join(names[i * subdivisions : i * subdivisions + subdivisions])
             for i in range(subdivisions)
         ]
-    )
+    )  # the result for this operation is a string in the form "1 2 3 / 4 5 6 / 7 8 9" with the rows in between the slashes having exactly {subdivisions} numbers
+    # for subdivisions = 3, this would be "1 2 3 / 4 5 6 / 7 8 9"
+    # for subdivisions = 4, this would be "1 2 3 4 / 5 6 7 8 / 9 10 11 12 / 13 14 15 16"
+    # technically it starts at zero, so everything offset by -1. but you get the point
 
     grid = Grid(
         Rect(f.a.r).align(f.a.r, y="mxy"), subdv_string, subdv_string, names_breakdown
@@ -415,4 +422,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(wave_bold, passes).prores().write().open()
+    FFMPEGExport(chars, passes).prores().write().open()
