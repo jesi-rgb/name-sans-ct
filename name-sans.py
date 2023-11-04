@@ -1,9 +1,11 @@
-from re import escape
 import numpy as np
 from coldtype import *
 from coldtype.warping import warp
 
-name = Font.Cacheable("~/fonts/variable/NameSans.ttf")
+font_path = "/Users/jesi/fonts/variable/NameSans.ttf"
+font_mono = "/Users/jesi/fonts/variable/NameMono.ttf"
+name = Font.Cacheable(font_path)
+mono = Font.Cacheable(font_mono)
 
 midi = MidiTimeline("assets/name_sans.mid", track=0, bpm=68, fps=60)
 wav = __sibling__("assets/name_sans.wav")
@@ -91,7 +93,7 @@ def chars(f):
     code = (
         StSt(
             f"UTF Code \\u{ {char_code} }",
-            name,
+            mono,
             50,
             opsz=0,
             wght=0.3,
