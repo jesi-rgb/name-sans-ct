@@ -69,7 +69,7 @@ def wave_bold(f):
     return group
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
 def chars(f):
     char_code = f.i // 5 + 32
     main = (
@@ -79,7 +79,7 @@ def chars(f):
             800,
             opsz=1,
             ital=f.e("qeio", 2),
-            wght=f.e("qeio"),
+            wght=f.e("qeio", 3),
             leading=60,
             multiline=True,
             features={"ss15": True, "titl": True},
@@ -136,7 +136,7 @@ def arrow(f):
 length_numbers = 700
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length_numbers, fps=30))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(length_numbers, fps=60))
 def numbers(f):
     def map_color(i):
         if i == math.isqrt(i) ** 2:
@@ -146,19 +146,18 @@ def numbers(f):
         else:
             return SECONDARY_COLOR
 
-    ot_features = f"Tabular Numbers (tnum)\nSlashed Zero (zero)"
+    ot_features = f"On  - Tabular Numbers (tnum)\nOn  - Slashed Zero (zero)\nOff - Required Variation Alternates (rvrn)"
     ot_feat_stst = (
         StSt(
             ot_features,
-            name,
-            20,
-            opsz=0.1,
-            wght=0.5,
+            mono,
+            35,
+            wght=0.4,
             leading=10,
             features={"tnum": True, "zero": True},
         )
         .align(f.a.r.inset(30), x="mnx", y="mxy")
-        .f(SECONDARY_COLOR, 0.4)
+        .f(SECONDARY_COLOR, 0.6)
     )
 
     n = 9**2
@@ -169,19 +168,20 @@ def numbers(f):
                     f"{i+1:02d}",
                     name,
                     94,
-                    opsz=0.7,
+                    opsz=0.9,
                     # wght=np.cos(i % n * (f.i / 100)),
                     wght=0.5
                     + 0.5 * np.cos(i % n * f.i / length_numbers),  # happy with this one
                     fill=map_color(i + 1),
-                    features={"tnum": True, "zero": True},
+                    features={"tnum": True, "zero": True, 'rvrn':False},
                 )
                 for i in range(n)
             ]
         )
         .grid(every=np.sqrt(n))
         .lead(30)
-        .translate(x=20, y=30)
+        # .align(f.a.r.inset(30), y='mny')
+        .translate(x=30, y=30)
     )
 
     return (numbers, ot_feat_stst)
@@ -260,7 +260,7 @@ def angle(f):
     return (main, angle)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(800, fps=60))
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(600, fps=60))
 def design_space(f):
     inset = 100
 
@@ -305,9 +305,9 @@ def design_space(f):
     ital_value = (
         StSt(
             f"{ital_axis:.2f}",
-            name,
+            mono,
             50,
-            wght=0.5,
+            wght=0.3,
             features={"tnum": True, "zero": True},
         )
         .rotate(90)
@@ -323,7 +323,7 @@ def design_space(f):
     wght_value = (
         StSt(
             f"{wght_axis*999:06.2f}",
-            name,
+            mono,
             50,
             wght=0.5,
             features={"tnum": True, "zero": True},
@@ -334,7 +334,7 @@ def design_space(f):
     )
 
     text = StSt(
-        "Unmistakable",
+        "through",
         name,
         130,
         wght=wght_axis,
@@ -424,4 +424,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(chars, passes).prores().write().open()
+    FFMPEGExport(design_space, passes).prores().write().open()
