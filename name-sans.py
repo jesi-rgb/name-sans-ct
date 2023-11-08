@@ -173,7 +173,7 @@ def numbers(f):
                     wght=0.5
                     + 0.5 * np.cos(i % n * f.i / length_numbers),  # happy with this one
                     fill=map_color(i + 1),
-                    features={"tnum": True, "zero": True, 'rvrn':False},
+                    features={"tnum": True, "zero": True, "rvrn": False},
                 )
                 for i in range(n)
             ]
@@ -189,43 +189,46 @@ def numbers(f):
 
 grotesque_length = 400
 
-
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+#
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def grotesque(f):
     ss19 = True if f.i > grotesque_length // 2 else False
     ss06 = True if f.i > grotesque_length // 2 else False
+
+    style = Style(
+        name,
+        250,
+        opsz=1,
+        ital=f.e("qeio", 2),
+        wght=f.e("ceio", 4),
+        leading=40,
+        multiline=True,
+        fill=PRIMARY_COLOR,
+        features={"ss19": ss19, "ss06": ss06},
+    )
+
     main = (
-        StSt(
-            "GRO\nTES\nQUE",
-            name,
-            300,
-            opsz=1,
-            ital=f.e("qeio", 2),
-            wght=f.e("ceio", 4),
-            leading=40,
-            multiline=True,
-            features={"ss19": ss19, "ss06": ss06},
-        )
-        .f(PRIMARY_COLOR)
-        .removeOverlap()
-        # .outline(offset=3.5)
+        P([StSt(t, style) for t in ["GEO", "METRIC", "GROT", "ESQUE"]])
+        .reverse()
+        .distribute(v=1, tv=True)
         .align(f.a.r)
         .translate(x=0, y=50)
     )
+    print(main)
     ot_features = f"Alternate G (ss06) = {'On' if ss06 else 'Off'}\nAlternate R (ss19) = {'On' if ss19 else 'Off'}"
     ot_feat_stst = (
         StSt(
             ot_features,
-            name,
-            30,
-            opsz=0.2,
+            mono,
+            34,
+            wght=0.6,
             leading=20,
             features={"tnum": True, "zero": True},
         )
-        .align(f.a.r.inset(30), x="mnx", y="mny")
-        .f(SECONDARY_COLOR, 0.4)
+        .align(f.a.r.inset(30), x="mdx", y="mny")
+        .f(SECONDARY_COLOR, 0.6)
     )
-    return (main, ot_feat_stst)
+    return (*main, ot_feat_stst)
 
 
 # @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
@@ -260,7 +263,7 @@ def angle(f):
     return (main, angle)
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(600, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(600, fps=60))
 def design_space(f):
     inset = 100
 
