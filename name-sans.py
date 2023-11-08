@@ -189,8 +189,7 @@ def numbers(f):
 
 grotesque_length = 400
 
-#
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def grotesque(f):
     ss19 = True if f.i > grotesque_length // 2 else False
     ss06 = True if f.i > grotesque_length // 2 else False
@@ -203,18 +202,20 @@ def grotesque(f):
         wght=f.e("ceio", 4),
         leading=40,
         multiline=True,
-        fill=PRIMARY_COLOR,
         features={"ss19": ss19, "ss06": ss06},
     )
 
     main = (
-        P([StSt(t, style) for t in ["GEO", "METRIC", "GROT", "ESQUE"]])
-        .reverse()
-        .distribute(v=1, tv=True)
+        P(
+            [
+                StSt(t, style).f(PRIMARY_COLOR if i % 2 == 0 else SECONDARY_COLOR)
+                for i, t in enumerate(["GEO", "METRIC", "GROT", "ESQUE"])
+            ]
+        )
+        .stack(leading=10, ty=1)
         .align(f.a.r)
         .translate(x=0, y=50)
     )
-    print(main)
     ot_features = f"Alternate G (ss06) = {'On' if ss06 else 'Off'}\nAlternate R (ss19) = {'On' if ss19 else 'Off'}"
     ot_feat_stst = (
         StSt(
@@ -231,15 +232,15 @@ def grotesque(f):
     return (*main, ot_feat_stst)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(400, fps=60))
 def angle(f):
-    angle = f.e("qeio")
+    angle = f.e("qeio", 0)
 
     main = (
         StSt("NAME\nSANS", name, 300, opsz=1, ital=angle, wght=0.4, leading=40)
         .f(-1)
         .ro()
-        .ssw(PRIMARY_COLOR, f.e("qeio", rng=(0.3, 3)))
+        .ssw(PRIMARY_COLOR, f.e("qeio", 0, rng=(0.3, 3)))
         .align(f.a.r.inset(30), x="mnx")
     )
 
@@ -349,7 +350,7 @@ def design_space(f):
     return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=midi, audio=wav)
+@animation(render_bg=1, bg=BG_COLOR, timeline=midi, audio=wav)
 def on_beat(f):
     drums = f.t
 
@@ -365,15 +366,13 @@ def on_beat(f):
     perc_5 = drums.ki(57)
     hh = drums.ki(42)
 
-    string = "Variable"
+    string = "NAME"
     if si % 4 == 0:
-        string = "Weight"
+        string = "SANS"
     elif si % 4 == 1:
-        string = "Italic"
-    elif si % 4 == 2:
-        string = "OPSZ"
+        string = "VARI\nABLE"
     else:
-        string = "Variable"
+        string = "NAME"
 
     subdivisions = 10
     subdv_string = (
@@ -410,7 +409,7 @@ def on_beat(f):
         StSt(
             string,
             name,
-            300,
+            350,
             opsz=1,
             wght=kick.adsr(ar["KD"], rng=(0.1, 0.9)) + snare_v,
             ital=snare_v,
@@ -427,4 +426,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(design_space, passes).prores().write().open()
+    FFMPEGExport(on_beat, passes, loops=2).prores().write().open()
