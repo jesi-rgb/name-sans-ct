@@ -69,17 +69,20 @@ def wave_bold(f):
     return group
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+charset = "abcdefghijklmnñopqrstuvwxyzàáâãäåçèéêëìíîïñòóôõöøùúûüýÿ0123456789.,:;!?@#%&§`'\"“”‘’[]{}()$€¥¢£"
+
+
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(len(charset) * 5, fps=60))
 def chars(f):
-    char_code = f.i // 5 + 32
+    char_code = (f.i // 5) % len(charset)
     main = (
         StSt(
-            chr(char_code),
+            charset[char_code],
             name,
             800,
             opsz=1,
             ital=f.e("qeio", 2),
-            wght=f.e("qeio", 3),
+            wght=f.e("seio", 3),
             leading=60,
             multiline=True,
             features={"ss15": True, "titl": True},
@@ -92,14 +95,14 @@ def chars(f):
     )
     code = (
         StSt(
-            f"UTF Code \\u{ {char_code} }",
+            f"UTF Code \\u{ {ord(charset[char_code].encode('cp1252'))} }",
             mono,
             50,
             opsz=0,
             wght=0.3,
             features={"tnum": True},
         )
-        .align(f.a.r.inset(30), y="mny")
+        .align(f.a.r.inset(30), y="mny", x="mnx")
         .f(SECONDARY_COLOR, 0.7)
     )
     return (main, code)
@@ -189,6 +192,7 @@ def numbers(f):
 
 grotesque_length = 400
 
+
 # @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(grotesque_length, fps=60))
 def grotesque(f):
     ss19 = True if f.i > grotesque_length // 2 else False
@@ -212,7 +216,7 @@ def grotesque(f):
                 for i, t in enumerate(["GEO", "METRIC", "GROT", "ESQUE"])
             ]
         )
-        .stack(leading=10, ty=1)
+        .stack(leading=10)
         .align(f.a.r)
         .translate(x=0, y=50)
     )
@@ -350,7 +354,7 @@ def design_space(f):
     return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=midi, audio=wav)
+# @animation(render_bg=1, bg=BG_COLOR, timeline=midi, audio=wav)
 def on_beat(f):
     drums = f.t
 
@@ -426,4 +430,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(on_beat, passes, loops=2).prores().write().open()
+    FFMPEGExport(chars, passes).prores().write().open()
