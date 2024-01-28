@@ -47,7 +47,7 @@ def name_sans(f):
     )
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
 def wave_bold(f):
     texts = []
     for i in range(12):
@@ -72,7 +72,7 @@ def wave_bold(f):
 charset = "abcdefghijklmnñopqrstuvwxyzàáâãäåçèéêëìíîïñòóôõöøùúûüýÿ0123456789.,:;!?@#%&§`'\"“”‘’[]{}()$€¥¢£"
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(len(charset) * 5, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(len(charset) * 5, fps=60))
 def chars(f):
     char_code = (f.i // 5) % len(charset)
     main = (
@@ -354,7 +354,7 @@ def design_space(f):
     return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=midi, audio=wav)
+# @animation(render_bg=1, bg=BG_COLOR, timeline=midi)
 def on_beat(f):
     drums = f.t
 
@@ -430,4 +430,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(chars, passes).prores().write().open()
+    FFMPEGExport(wave_bold, passes).h264().write().open()
