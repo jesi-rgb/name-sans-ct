@@ -47,7 +47,7 @@ def name_sans(f):
     )
 
 
-@animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
+# @animation(render_bg=1, bg=BG_COLOR, timeline=Timeline(500, fps=60))
 def wave_bold(f):
     texts = []
     for i in range(12):
@@ -354,7 +354,7 @@ def design_space(f):
     return (rect, text, dot, wght_label, ital_value, wght_value, ital_label, *squares)
 
 
-# @animation(render_bg=1, bg=BG_COLOR, timeline=midi)
+@animation(render_bg=1, bg=BG_COLOR, timeline=midi)
 def on_beat(f):
     drums = f.t
 
@@ -370,11 +370,11 @@ def on_beat(f):
     perc_5 = drums.ki(57)
     hh = drums.ki(42)
 
-    string = "NAME"
+    string = "VARI\nABLE"
     if si % 4 == 0:
         string = "SANS"
     elif si % 4 == 1:
-        string = "VARI\nABLE"
+        string = "NAME"
     else:
         string = "NAME"
 
@@ -430,4 +430,4 @@ def on_beat(f):
 
 
 def release(passes):
-    FFMPEGExport(wave_bold, passes).h264().write().open()
+    FFMPEGExport(on_beat, passes).prores().write().open()
